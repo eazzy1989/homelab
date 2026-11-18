@@ -57,7 +57,7 @@ Der kleine Thin Client zeigt, dass ein sinnvolles Homelab keine teure Server-Har
 | Speicher | LVM-Thin auf der SSD für VM-Disks, separate HDD für Backups |
 | Sicherheit | Proxmox-Firewall aktiv |
 | Wartung | eigener Timer für tägliche Paket-Updates, SMART-Überwachung der Festplatten (smartmontools) |
-| Monitoring | eigene systemd-Dienste überwachen Host-Zustand und Internetverbindung |
+| Monitoring | eigener [Proxmox Monitor](proxmox-monitor/) überwacht Host, VMs, Speicher und Backups per Telegram |
 
 ### Virtuelle Maschinen und Container
 
@@ -82,6 +82,17 @@ Der kleine Thin Client zeigt, dass ein sinnvolles Homelab keine teure Server-Har
 
 Alle eigenen Anwendungen laufen als **systemd-Dienste** mit automatischem Neustart, Zugangsdaten liegen in `.env`-Dateien mit Rechten `600` – nie im Code.
 
+## Sicherheit
+
+| Ebene | Maßnahme |
+|---|---|
+| Proxmox-Host | Proxmox-Firewall aktiv, Verwaltung nur über benötigte Ports |
+| Ubuntu-Server | Host-Firewall (ufw) mit Standard „alles verweigern“ – nur benötigte Dienste freigegeben, Verwaltungszugriff nur aus dem Heimnetz |
+| SSH | Anmeldung ausschließlich per Schlüssel, Passwort- und root-Login deaktiviert |
+| Angriffsschutz | fail2ban sperrt IPs nach wiederholten Fehlversuchen |
+| Updates | automatische Sicherheitsupdates, Kernel-Livepatching ohne Neustart |
+| Notfallzugang | Proxmox-Konsole als Rückfallebene, falls SSH nicht verfügbar ist |
+
 ## Backup-Konzept
 
 | | |
@@ -98,13 +109,13 @@ Damit lässt sich eine VM auf den Stand von gestern, letzter Woche oder letztem 
 ## Monitoring
 
 - **Ubuntu Guardian** prüft alle paar Minuten CPU, RAM, Festplatten, Dienste, Netzwerk und Zertifikate und meldet Probleme per Telegram – inklusive Entwarnung, sobald ein Problem behoben ist.
-- Auf dem Proxmox-Host überwachen eigene Dienste den Host und die Internetverbindung.
+- Der **[Proxmox Monitor](proxmox-monitor/)** überwacht den Host selbst: VMs und Container, Speicher, SMART, Backups und Netzwerk – ebenfalls per Telegram bedienbar.
 - SMART-Werte der Festplatten werden laufend geprüft, um Ausfälle früh zu erkennen.
 
 ## Was ich hier gelernt habe
 
 - VMs und Container in Proxmox planen, betreiben und sichern
-- Linux-Server härten und aktuell halten (fail2ban, Livepatch, automatische Updates)
+- Linux-Server härten und aktuell halten (Firewall, SSH nur per Schlüssel, fail2ban, Livepatch)
 - eigene Dienste sauber als systemd-Units betreiben und Zugangsdaten vom Code trennen
 - Monitoring und Alarmierung selbst bauen – und dabei Fehlalarme vermeiden
 - ein Backup-Konzept mit Aufbewahrungsregeln umsetzen

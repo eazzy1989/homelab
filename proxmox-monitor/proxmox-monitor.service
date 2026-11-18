@@ -1,0 +1,15 @@
+[Unit]
+Description=Proxmox Monitor – Host-Überwachung per Telegram
+After=network-online.target pve-cluster.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/proxmox-monitor
+ExecStart=/opt/proxmox-monitor/venv/bin/python /opt/proxmox-monitor/monitor.py
+Restart=always
+RestartSec=10
+User=root
+
+[Install]
+WantedBy=multi-user.target
