@@ -27,6 +27,7 @@ flowchart TB
     subgraph SRV[Dienste auf dem Ubuntu-Server]
         CADDY[Caddy<br/>Reverse Proxy]
         GUARD[Ubuntu Guardian<br/>Monitoring + API]
+        MON[Docker: Grafana · Prometheus<br/>Uptime Kuma]
         BOTS[Telegram-Bots<br/>AP1/AP2-Trainer u. a.]
     end
     UBU --- SRV
@@ -74,7 +75,8 @@ Der kleine Thin Client zeigt, dass ein sinnvolles Homelab keine teure Server-Har
 
 | Dienst | Aufgabe |
 |---|---|
-| **Caddy** | Reverse Proxy vor den internen Webdiensten |
+| **Caddy** | Reverse Proxy mit internem TLS vor Grafana und Uptime Kuma – nur im Heimnetz erreichbar |
+| **[Docker-Monitoring-Stack](https://github.com/eazzy1989/docker-monitoring-stack)** | Prometheus, Node Exporter, Grafana und Uptime Kuma per Docker Compose |
 | **[Ubuntu Guardian](https://github.com/eazzy1989/ubuntu-guardian)** | eigenes Monitoring: Ressourcen, Dienste, Netzwerk, Zertifikate, Updates – Alarme und Bedienung per Telegram |
 | **[FISI-Prüfungstrainer](https://github.com/eazzy1989/fisi-pruefungstrainer)** | Telegram-Bots zur Prüfungsvorbereitung, von meiner Lerngruppe genutzt |
 | weitere Bots | private Automatisierungen (z. B. Benachrichtigungen) als systemd-Dienste |
@@ -93,6 +95,7 @@ Alle eigenen Anwendungen laufen als **systemd-Dienste** mit automatischem Neusta
 | SSH | Anmeldung ausschließlich per Schlüssel, Passwort- und root-Login deaktiviert |
 | Angriffsschutz | fail2ban sperrt IPs nach wiederholten Fehlversuchen |
 | Updates | automatische Sicherheitsupdates, Kernel-Livepatching ohne Neustart |
+| Docker | Weboberflächen nur auf `127.0.0.1`, Zugriff über Caddy (internes TLS) bzw. SSH-Tunnel – keine an der Firewall vorbei veröffentlichten Ports |
 | Notfallzugang | Proxmox-Konsole als Rückfallebene, falls SSH nicht verfügbar ist |
 
 ## Backup-Konzept
@@ -113,6 +116,8 @@ Damit lässt sich eine VM auf den Stand von gestern, letzter Woche oder letztem 
 - **Ubuntu Guardian** prüft alle paar Minuten CPU, RAM, Festplatten, Dienste, Netzwerk und Zertifikate und meldet Probleme per Telegram – inklusive Entwarnung, sobald ein Problem behoben ist.
 - Der **[Proxmox Monitor](proxmox-monitor/)** überwacht den Host selbst: VMs und Container, Speicher, SMART, Backups und Netzwerk – ebenfalls per Telegram bedienbar.
 - SMART-Werte der Festplatten werden laufend geprüft, um Ausfälle früh zu erkennen.
+- **Prometheus + Grafana** speichern Metriken 30 Tage und zeigen Verläufe; vier Alarmregeln (Ziel nicht erreichbar, CPU, RAM, Festplatte).
+- **Uptime Kuma** prüft Router, Proxmox, Home Assistant, Website und die Monitoring-Dienste selbst und meldet Ausfälle per Telegram.
 
 ## Was ich hier gelernt habe
 
@@ -129,6 +134,10 @@ Damit lässt sich eine VM auf den Stand von gestern, letzter Woche oder letztem 
 - [exchange-migration-toolkit](https://github.com/eazzy1989/exchange-migration-toolkit) – PowerShell-Tools für Exchange-Migrationen
 - [m365-graph-admin-scripts](https://github.com/eazzy1989/m365-graph-admin-scripts) – Microsoft-365-Administration mit Microsoft Graph
 - [azure-bicep-lab](https://github.com/eazzy1989/azure-bicep-lab) – Azure-Infrastruktur als Code
+- [docker-monitoring-stack](https://github.com/eazzy1989/docker-monitoring-stack) – Grafana, Prometheus und Uptime Kuma per Docker Compose
+- [ubuntu-hardening-ansible](https://github.com/eazzy1989/ubuntu-hardening-ansible) – die Server-Härtung dieses Labs als Ansible-Playbook
+- [ad-lab-powershell](https://github.com/eazzy1989/ad-lab-powershell) – Active-Directory-Lab mit PowerShell
+- [network-lab-cisco](https://github.com/eazzy1989/network-lab-cisco) – Cisco-Netzwerk-Lab mit VLANs, OSPF, NAT und ACLs
 
 ## Lizenz
 
