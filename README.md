@@ -1,6 +1,6 @@
 # Homelab
 
-Mein privates Homelab auf Basis von **Proxmox VE**: ein kleiner Virtualisierungs-Host, auf dem Hausautomation, DNS-Filterung und ein Ubuntu-Server mit eigenen Diensten laufen – überwacht, gesichert und größtenteils automatisiert.
+Mein privates Homelab auf Basis von **Proxmox VE**: ein stromsparender Thin Client als Virtualisierungs-Host, auf dem Hausautomation, DNS-Filterung und ein Ubuntu-Server mit eigenen Diensten laufen – überwacht, gesichert und größtenteils automatisiert.
 
 Hier teste ich, was ich in der Umschulung und im Beruf lerne, unter realen Bedingungen: Virtualisierung, Linux-Administration, Netzwerk, Backup und Monitoring.
 
@@ -11,7 +11,7 @@ flowchart TB
     INET((Internet)) --- ROUTER[Router]
     ROUTER --- LAN[Heimnetz]
 
-    subgraph PVE[Proxmox VE 9 · 4 Kerne · 16 GB RAM]
+    subgraph PVE[Proxmox VE 9 · Dell Wyse 5070]
         direction TB
         HA[VM: Home Assistant]
         UBU[VM: Ubuntu Server 24.04 LTS]
@@ -29,7 +29,7 @@ flowchart TB
     end
     UBU --- SRV
 
-    BK[(Backup-Disk<br/>~500 GB)]
+    BK[(Backup-HDD<br/>500 GB)]
     PVE == tägliche Snapshots ==> BK
 
     TG([Telegram]) <-. Alarme & Bedienung .-> GUARD
@@ -37,12 +37,24 @@ flowchart TB
 
 ## Komponenten
 
+### Hardware
+
+| Komponente | Ausstattung |
+|---|---|
+| Gerät | Dell Wyse 5070 Thin Client – lüfterlos, sehr geringer Stromverbrauch |
+| CPU | Intel Celeron J4105, 4 Kerne |
+| RAM | 16 GB |
+| System & VMs | 256 GB SSD |
+| Backups | 500 GB HDD, getrennt von den VM-Daten |
+
+Der kleine Thin Client zeigt, dass ein sinnvolles Homelab keine teure Server-Hardware braucht – entscheidend ist, die Ressourcen bewusst zu verteilen.
+
 ### Proxmox-Host
 
 | Bereich | Umsetzung |
 |---|---|
 | Virtualisierung | Proxmox VE 9.2 mit KVM-VMs und LXC-Containern |
-| Speicher | LVM-Thin für VM-Disks, separate Festplatte für Backups |
+| Speicher | LVM-Thin auf der SSD für VM-Disks, separate HDD für Backups |
 | Sicherheit | Proxmox-Firewall aktiv |
 | Wartung | eigener Timer für tägliche Paket-Updates, SMART-Überwachung der Festplatten (smartmontools) |
 | Monitoring | eigene systemd-Dienste überwachen Host-Zustand und Internetverbindung |
@@ -77,7 +89,7 @@ Alle eigenen Anwendungen laufen als **systemd-Dienste** mit automatischem Neusta
 | Was | alle VMs und Container |
 | Wie | Proxmox `vzdump` im Snapshot-Modus (ohne Ausfallzeit) |
 | Wann | täglich um 00:30 Uhr |
-| Wohin | separate Backup-Festplatte |
+| Wohin | separate Backup-HDD (500 GB) |
 | Aufbewahrung | die letzten 3 täglichen, 2 wöchentliche und 2 monatliche Sicherungen |
 | Zusätzlich | eigene Sicherung der Proxmox-Host-Konfiguration per Timer |
 
