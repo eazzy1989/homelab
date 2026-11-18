@@ -1,5 +1,7 @@
 # Homelab
 
+[![Python](https://github.com/eazzy1989/homelab/actions/workflows/python-lint.yml/badge.svg)](https://github.com/eazzy1989/homelab/actions/workflows/python-lint.yml)
+
 Mein privates Homelab auf Basis von **Proxmox VE**: ein stromsparender Thin Client als Virtualisierungs-Host, auf dem Hausautomation, DNS-Filterung und ein Ubuntu-Server mit eigenen Diensten laufen – überwacht, gesichert und größtenteils automatisiert.
 
 Hier teste ich, was ich in der Umschulung und im Beruf lerne, unter realen Bedingungen: Virtualisierung, Linux-Administration, Netzwerk, Backup und Monitoring.
